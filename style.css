@@ -597,8 +597,20 @@ input[type=range] {
 }
 
 .room-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.lobby-header {
+    width: 100%;
     text-align: center;
-    margin-bottom: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Lobby Layout Base Styles */
@@ -721,11 +733,17 @@ input[type=range] {
 
     .controls-panel {
         flex: 1;
+        display: flex;
+        flex-direction: column;
         justify-content: center;
+        /* Vertical Center */
+        align-items: center;
+        /* Horizontal Center */
         background: rgba(0, 0, 0, 0.2);
-        padding: 1.5rem;
+        padding: 2rem;
         border-radius: 16px;
         margin: 0;
+        text-align: center;
     }
 
     /* Game Screen Landscape */
@@ -741,27 +759,34 @@ input[type=range] {
     .game-header {
         flex-direction: column !important;
         width: 150px;
-        height: 80%;
-        justify-content: flex-end;
-        /* Bottom Alignment */
-        align-self: flex-end;
+        height: auto;
+        justify-content: center;
+        align-items: center;
+        /* Center horizontally */
+        align-self: center;
         gap: 1.5rem;
         order: 3;
-        /* Right Side */
         margin: 0;
-        padding-bottom: 2rem;
     }
 
     .game-header>div:first-child {
+        display: flex;
         flex-direction: column !important;
-        gap: 1rem;
+        align-items: center !important;
+        gap: 1.5rem;
         width: 100% !important;
     }
 
     .game-header .score-board {
+        display: flex;
         flex-direction: column;
+        align-items: center;
         gap: 0.5rem !important;
+    }
+
+    #turn-indicator {
         text-align: center;
+        width: 100%;
     }
 
     .game-area {
@@ -776,10 +801,46 @@ input[type=range] {
 
     .taboo-card {
         height: 85vh;
-        width: 500px;
-        /* Wide Card */
-        max-width: 60vw;
+        width: 600px;
+        max-width: 70vw;
         margin: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .card-header {
+        padding: 2rem;
+        flex: 0 0 auto;
+    }
+
+    .card-header h2 {
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+        margin: 0;
+    }
+
+    .card-body {
+        flex: 1;
+        display: flex;
+        /* Flex to center vertically */
+        align-items: center;
+        justify-content: center;
+        padding: 0 2rem;
+    }
+
+    .banned-list {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .banned-list li {
+        font-size: 1.6rem;
+        padding: 0.5rem 0;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
     }
 
     .game-controls {
