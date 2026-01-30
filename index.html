@@ -21,20 +21,24 @@
         <!-- Başlangıç / Giriş Ekranı -->
         <section id="start-screen" class="screen active">
             <div class="hero-content">
-                <h1 class="neon-text">NEON<br>ONLINE</h1>
-                <p class="subtitle">Arkadaşlarınla Online Tabu Oyna!</p>
-
-                <div class="inputs-container" style="margin-bottom: 2rem;">
-                    <input type="text" id="username-input" class="cyber-input" placeholder="Kullanıcı Adı"
-                        maxlength="10">
+                <div class="hero-left">
+                    <h1 class="neon-text">NEON<br>ONLINE</h1>
+                    <p class="subtitle">Arkadaşlarınla Online Tabu Oyna!</p>
                 </div>
 
-                <div class="action-buttons-row">
-                    <button id="create-room-btn" class="btn primary-btn">ODA OLUŞTUR</button>
-                    <div class="join-container">
-                        <input type="text" id="room-code-input" class="cyber-input small" placeholder="ODA KODU"
-                            maxlength="6">
-                        <button id="join-room-btn" class="btn secondary-btn">KATIL</button>
+                <div class="hero-right">
+                    <div class="inputs-container" style="margin-bottom: 2rem;">
+                        <input type="text" id="username-input" class="cyber-input" placeholder="Kullanıcı Adı"
+                            maxlength="10">
+                    </div>
+
+                    <div class="action-buttons-row">
+                        <button id="create-room-btn" class="btn primary-btn">ODA OLUŞTUR</button>
+                        <div class="join-container">
+                            <input type="text" id="room-code-input" class="cyber-input small" placeholder="ODA KODU"
+                                maxlength="6">
+                            <button id="join-room-btn" class="btn secondary-btn">KATIL</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -46,45 +50,55 @@
 
         <!-- Lobi Ekranı -->
         <section id="lobby-screen" class="screen hidden">
-            <h2 class="neon-text small">LOBİ</h2>
-            <div class="room-info">
-                <span>ODA KODU: </span>
-                <span id="display-room-code" class="code-highlight">UNKNOWN</span>
-            </div>
+            <div class="lobby-layout">
+                <!-- Sol Panel: Takım Listeleri -->
+                <div class="teams-panel">
+                    <div class="teams-container">
+                        <div class="team-column red">
+                            <h3 class="team-title red-title">🔴 KIRMIZI TAKIM</h3>
+                            <div class="team-score">Skor: <span id="red-score">0</span></div>
+                            <ul id="red-team-list" class="team-player-list">
+                                <!-- Red team players -->
+                            </ul>
+                        </div>
+                        <div class="team-column blue">
+                            <h3 class="team-title blue-title">🔵 MAVİ TAKIM</h3>
+                            <div class="team-score">Skor: <span id="blue-score">0</span></div>
+                            <ul id="blue-team-list" class="team-player-list">
+                                <!-- Blue team players -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="team-selection">
-                <h3>TAKIMINI SEÇ</h3>
-                <div class="team-buttons">
-                    <button id="join-red-team" class="team-btn red-team">KIRMIZI TAKIM</button>
-                    <button id="join-blue-team" class="team-btn blue-team">MAVİ TAKIM</button>
-                </div>
-            </div>
+                <!-- Sağ Panel: Kontroller ve Bilgi -->
+                <div class="controls-panel">
+                    <div class="lobby-header">
+                        <h2 class="neon-text small">LOBİ</h2>
+                        <div class="room-info">
+                            <span>ODA KODU: </span>
+                            <span id="display-room-code" class="code-highlight">UNKNOWN</span>
+                        </div>
+                    </div>
 
-            <div class="teams-container">
-                <div class="team-column red">
-                    <h3 class="team-title red-title">🔴 KIRMIZI TAKIM</h3>
-                    <div class="team-score">Skor: <span id="red-score">0</span></div>
-                    <ul id="red-team-list" class="team-player-list">
-                        <!-- Red team players -->
-                    </ul>
-                </div>
-                <div class="team-column blue">
-                    <h3 class="team-title blue-title">🔵 MAVİ TAKIM</h3>
-                    <div class="team-score">Skor: <span id="blue-score">0</span></div>
-                    <ul id="blue-team-list" class="team-player-list">
-                        <!-- Blue team players -->
-                    </ul>
-                </div>
-            </div>
+                    <div class="team-selection">
+                        <h3>TAKIMINI SEÇ</h3>
+                        <div class="team-buttons">
+                            <button id="join-red-team" class="team-btn red-team">KIRMIZI TAKIM</button>
+                            <button id="join-blue-team" class="team-btn blue-team">MAVİ TAKIM</button>
+                        </div>
+                    </div>
 
-            <div id="host-controls" class="hidden">
-                <div class="setting-group" style="margin: 1.5rem 0;">
-                    <label>Süre: <span id="time-display">60</span> sn</label>
-                    <input type="range" id="time-input" min="30" max="120" step="10" value="60">
+                    <div id="host-controls" class="hidden">
+                        <div class="setting-group" style="margin: 1.5rem 0;">
+                            <label>Süre: <span id="time-display">60</span> sn</label>
+                            <input type="range" id="time-input" min="30" max="120" step="10" value="60">
+                        </div>
+                        <button id="lobby-start-btn" class="btn primary-btn pulse-anim">OYUNU BAŞLAT</button>
+                    </div>
+                    <p id="waiting-msg" class="subtitle hidden">Yönetici oyunu başlatıyor...</p>
                 </div>
-                <button id="lobby-start-btn" class="btn primary-btn pulse-anim">OYUNU BAŞLAT</button>
             </div>
-            <p id="waiting-msg" class="subtitle hidden">Yönetici oyunu başlatıyor...</p>
         </section>
 
 
