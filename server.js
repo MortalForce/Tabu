@@ -13,18 +13,9 @@ const io = new Server(server, {
     }
 });
 
-// Serve static files
 app.use(express.static(__dirname));
 
-// Read data.js content manually to avoid module issues with client-side JS
-// We will just copy the data logic here or parse it. 
-// For simplicity, I'll include the game data directly here or requires a conversion.
-// Since data.js is simple, I'll just load it. 
-// Actually, let's keep data.js for client but duplicate the structure for server to control cards.
-// Or better: Let the server be the source of truth for data.
-
 const baseCards = [
-    // --- SANDBOX & CO-OP & INDIE ---
     { word: "MINECRAFT", banned: ["Blok", "Küp", "Steve", "Creeper", "Elmas"] },
     { word: "TERRARIA", banned: ["2D", "Minecraft", "Boss", "Maden", "Moon Lord"] },
     { word: "STARDEW VALLEY", banned: ["Çiftlik", "Dede", "Ekin", "Mevsim", "Pelican"] },
@@ -33,8 +24,6 @@ const baseCards = [
     { word: "IT TAKES TWO", banned: ["Çift", "Boşanma", "Bebek", "Kitap", "Co-op"] },
     { word: "A WAY OUT", banned: ["Hapishane", "Kaçış", "İki Kişi", "Leo", "Vincent"] },
     { word: "DONT STARVE", banned: ["Açlık", "Karanlık", "Bilim", "Wilson", "Hayatta Kalma"] },
-
-    // --- HİKAYELİ / AKSİYON / RPG OYUNLARI ---
     { word: "RDR 2", banned: ["Kovboy", "At", "Arthur", "Çete", "Vahşi Batı"] },
     { word: "THE WITCHER 3", banned: ["Geralt", "Canavar", "Büyücü", "Gümüş", "Ciri"] },
     { word: "THE LAST OF US", banned: ["Mantar", "Zombi", "Joel", "Ellie", "Clicker"] },
@@ -76,14 +65,10 @@ const baseCards = [
     { word: "METRO", banned: ["Tren", "Tünel", "Rusya", "Gaz Maskesi", "Canavar"] },
     { word: "DYING LIGHT", banned: ["Parkur", "Zombi", "Gece", "Şehir", "Harran"] },
     { word: "DAYS GONE", banned: ["Motosiklet", "Sürü", "Zombi", "Deacon", "Oregon"] },
-
-    // --- KORKU OYUNLARI ---
     { word: "RESIDENT EVIL", banned: ["Zombi", "Umbrella", "Rakun", "Virüs", "Leon"] },
     { word: "OUTLAST", banned: ["Kamera", "Deliler", "Pil", "Kaçmak", "Hastane"] },
     { word: "FNAF", banned: ["Ayı", "Pizza", "Kamera", "Robot", "Gece"] },
     { word: "RE: VILLAGE", banned: ["Köy", "Vampir", "Kurtadam", "Ethan", "Rose"] },
-
-    // --- KARAKTERLER: RDR & WESTERN ---
     { word: "ARTHUR MORGAN", banned: ["RDR2", "Kovboy", "Verem", "Günlük", "Fedakarlık"] },
     { word: "JOHN MARSTON", banned: ["RDR1", "Yara İzi", "Baba", "Çiftlik", "Abigail"] },
     { word: "DUTCH VAN DER LINDE", banned: ["Plan", "Tahiti", "Para", "Lider", "İhanet"] },
@@ -91,8 +76,6 @@ const baseCards = [
     { word: "SADIE ADLER", banned: ["Dul", "Ödül Avcısı", "Sarı Saç", "İntikam", "Silah"] },
     { word: "HOSEA MATTHEWS", banned: ["Yaşlı", "Akıl Hoca", "Dolandırıcı", "Kamp", "Dost"] },
     { word: "CHARLES SMITH", banned: ["Kızılderili", "Ok", "Avcı", "Sessiz", "Sadık"] },
-
-    // --- KARAKTERLER: WITCHER ---
     { word: "GERALT", banned: ["Witcher", "Ak Saç", "Rivyalı", "Kurt", "Kılıç"] },
     { word: "YENNEFER", banned: ["Büyücü", "Siyah", "Leylak", "Aşk", "Vengerberg"] },
     { word: "CIRI", banned: ["Kız", "Işınlanma", "Kılıç", "Kan", "İmparatoriçe"] },
@@ -100,14 +83,10 @@ const baseCards = [
     { word: "VESEMIR", banned: ["Usta", "Yaşlı", "Kurt", "Kale", "Öğretmen"] },
     { word: "EREDIN", banned: ["Vahşi Av", "Kral", "Witcher", "Kış", "Elf"] },
     { word: "GAUNTER O'DIMM", banned: ["Ayna", "Şeytan", "Kaşık", "Anlaşma", "Zaman"] },
-
-    // --- KARAKTERLER: THE LAST OF US ---
     { word: "JOEL MILLER", banned: ["Baba", "Saat", "Gitar", "Kaçakçı", "Sakal"] },
     { word: "ELLIE WILLIAMS", banned: ["Bağışık", "Kız", "Bıçak", "Dövme", "Dina"] },
     { word: "ABBY ANDERSON", banned: ["Kaslı", "Golf", "Sopa", "İntikam", "WLF"] },
     { word: "TOMMY MILLER", banned: ["Kardeş", "Jackson", "Keskin Nişancı", "Baraj", "Maria"] },
-
-    // --- KARAKTERLER: RESIDENT EVIL ---
     { word: "LEON S. KENNEDY", banned: ["Saç", "Polis", "Ajan", "Ada", "Raccoon"] },
     { word: "JILL VALENTINE", banned: ["Polis", "STARS", "Mavi", "Nemesis", "Kilit"] },
     { word: "CHRIS REDFIELD", banned: ["Kaya", "Yumruk", "Asker", "Kardeş", "Claire"] },
@@ -118,8 +97,6 @@ const baseCards = [
     { word: "ADA WONG", banned: ["Kırmızı", "Elbise", "Casus", "Leon", "Gizemli"] },
     { word: "KARL HEISENBERG", banned: ["Fabrika", "Metal", "Mıknatıs", "Köy", "Ethan"] },
     { word: "ETHAN WINTERS", banned: ["El", "Baba", "Köy", "Yüzsüz", "Mia"] },
-
-    // --- KARAKTERLER: SOULS & ELDEN RING ---
     { word: "GWYN", banned: ["Plin Plin Plon", "Lord of Cinder", "Ateş", "Güneş", "Şimşek"] }, // Eklendi!
     { word: "MALENIA", banned: ["Kılıç", "Çürük", "Kanat", "Zor", "Miquella"] },
     { word: "RANNI", banned: ["Cadı", "Mavi", "Dört Kol", "Ay", "Bebek"] },
@@ -130,8 +107,6 @@ const baseCards = [
     { word: "WOLF (SEKIRO)", banned: ["Shinobi", "Kuro", "Tek Kol", "Ölümsüz", "Kılıç"] },
     { word: "GODFREY", banned: ["İlk Lord", "Aslan", "Balta", "Elden", "Savaşçı"] },
     { word: "MOHG", banned: ["Kan", "Mızrak", "Miquella", "Lord", "Yeraltı"] },
-
-    // --- KARAKTERLER: DİĞER EFSANELER ---
     { word: "KRATOS", banned: ["Kel", "Sakal", "Öfke", "Yunan", "Baba"] },
     { word: "ATREUS", banned: ["Çocuk", "Ok", "Loki", "Boy", "Oğul"] },
     { word: "NATHAN DRAKE", banned: ["Hırsız", "Esprili", "Yüzük", "Elena", "Sully"] },
@@ -163,18 +138,17 @@ const baseCards = [
     { word: "ZAGREUS", banned: ["Hades", "Prens", "Kılıç", "Kan", "Ayak"] },
 ];
 
-// Helper to generate large dataset
-function generateCards(targetCount) {
-    let cards = [...baseCards];
-    while (cards.length < targetCount) {
-        const remaining = targetCount - cards.length;
-        const chunk = baseCards.slice(0, remaining).map(card => ({ ...card }));
-        cards = cards.concat(chunk);
+function shuffle(array) {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
     }
-    return cards;
+    console.log(`[SHUFFLE] Shuffled ${newArray.length} cards. First 3: ${newArray.slice(0, 3).map(c => c.word).join(', ')}`);
+    return newArray;
 }
 
-const ALL_CARDS = generateCards(100); // Server keeps the deck
+const ALL_CARDS = baseCards; // Use all cards from baseCards directly
 
 // Game State Management
 const rooms = new Map();
@@ -183,7 +157,7 @@ io.on('connection', (socket) => {
     console.log('New user connected:', socket.id);
 
     socket.on('createRoom', ({ username }) => {
-        const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+        const roomId = Math.random().toString(36).toUpperCase().substring(2, 8).padEnd(6, 'X');
         rooms.set(roomId, {
             id: roomId,
             players: [{ id: socket.id, username, score: 0, isHost: true, team: null }],
@@ -192,9 +166,8 @@ io.on('connection', (socket) => {
             timer: 60,
             settings: { time: 60 },
             turnIndex: 0,
-            turnIndex: 0,
             currentTeam: 'red', // Track which team is currently describing
-            deck: [...ALL_CARDS].sort(() => Math.random() - 0.5),
+            deck: shuffle(ALL_CARDS),
             teamScores: { red: 0, blue: 0 },
             passCount: 0,
             isPaused: false
@@ -263,7 +236,7 @@ io.on('connection', (socket) => {
             // SIRA MANTIĞI: Takım Takım ilerle
             room.redNextIdx = 0;
             room.blueNextIdx = 0;
-            room.nextTeamToPlay = 'red'; // İlk her zaman kırmızı başlar (veya rastgele)
+            room.nextTeamToPlay = Math.random() < 0.5 ? 'red' : 'blue'; // Başlangıç takımı rastgele
 
             startTurn(roomId);
             io.to(roomId).emit('gameStarted');
@@ -279,13 +252,15 @@ io.on('connection', (socket) => {
 
     socket.on('action', ({ roomId, type }) => {
         const room = rooms.get(roomId);
-        if (!room) return;
-        if (room.isPaused) return;
+        if (!room || room.gameState !== 'PLAYING' || room.isPaused) return;
 
         const activePlayer = room.players[room.turnIndex];
+        if (!activePlayer || !activePlayer.team) {
+            console.error('Action failed: activePlayer or team is undefined', { turnIndex: room.turnIndex });
+            return;
+        }
+        
         const playerTeam = activePlayer.team;
-
-        if (!playerTeam) return;
 
         if (type === 'correct') {
             room.teamScores[playerTeam] += 1;
@@ -373,9 +348,14 @@ function startTurn(roomId) {
     room.currentCard = room.deck.pop();
 
     if (!room.currentCard) {
-        room.deck = [...ALL_CARDS].sort(() => Math.random() - 0.5);
+        console.log(`[Room ${roomId}] Deck empty, reshuffling...`);
+        room.deck = shuffle(ALL_CARDS);
         room.currentCard = room.deck.pop();
     }
+    
+    console.log(`[Room ${roomId}] New turn - Card: ${room.currentCard?.word} (${room.deck.length} cards remaining)`);
+    console.log(`[Room ${roomId}] Next 3 cards in deck: ${room.deck.slice(-3).map(c => c?.word).join(', ')}`);
+
 
     const describerTeam = activePlayer.team;
 
@@ -423,10 +403,12 @@ function nextCard(roomId) {
 
     room.currentCard = room.deck.pop();
     if (!room.currentCard) {
-        room.deck = [...ALL_CARDS].sort(() => Math.random() - 0.5);
+        console.log(`[Room ${roomId}] Deck empty, reshuffling...`);
+        room.deck = shuffle(ALL_CARDS);
         room.currentCard = room.deck.pop();
     }
-
+    
+    console.log(`[Room ${roomId}] Next card: ${room.currentCard?.word} (${room.deck.length} cards remaining)`);
     io.to(roomId).emit('updateCard', room.currentCard);
 }
 
