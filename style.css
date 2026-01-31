@@ -22,7 +22,9 @@
 }
 
 body {
-    background-color: var(--bg-color);
+    background: linear-gradient(-45deg, #0d0d12, #1a1a2e, #16213e, #0d0d12);
+    /* Animation removed */
+    background-size: 100% 100%;
     color: var(--text-color);
     height: 100vh;
     height: 100dvh;
@@ -32,14 +34,30 @@ body {
     align-items: center;
 }
 
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
 .app-container {
     width: 100%;
     max-width: 500px;
     height: 100%;
     height: 100dvh;
     position: relative;
-    background: radial-gradient(circle at top right, #1f1f3a 0%, var(--bg-color) 40%);
+    background: rgba(255, 255, 255, 0.02);
+    /* backdrop-filter: blur(5px); */
     overflow: hidden;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
 }
 
 /* Utilities */
@@ -92,14 +110,23 @@ body {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     color: var(--text-color);
-    padding: 0.5rem;
-    border-radius: 12px;
+    padding: 0.8rem;
+    border-radius: 50%;
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.3s ease;
 }
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
 
 /* Screens */
 .screen {
@@ -192,26 +219,41 @@ input[type=range] {
 .bg-shapes .shape {
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
-    z-index: 1;
+    /* filter: blur(60px); */
+    z-index: 0;
+    /* animation: float 10s infinite ease-in-out; */
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    50% {
+        transform: translate(20px, -20px);
+    }
 }
 
 .shape-1 {
-    width: 200px;
-    height: 200px;
+    width: 300px;
+    height: 300px;
     background: var(--secondary-color);
     top: -50px;
     left: -50px;
-    opacity: 0.2;
+    opacity: 0.4;
+    animation-delay: 0s;
 }
 
 .shape-2 {
-    width: 300px;
-    height: 300px;
+    width: 400px;
+    height: 400px;
     background: var(--primary-color);
     bottom: -100px;
     right: -100px;
-    opacity: 0.1;
+    opacity: 0.3;
+    animation-delay: -5s;
 }
 
 /* Game Screen */
@@ -255,11 +297,18 @@ input[type=range] {
 
 .score-board {
     background: var(--glass-bg);
-    padding: 0.4rem 1rem;
+    padding: 0.8rem 1.8rem;
     border-radius: 50px;
     border: 1px solid var(--glass-border);
-    font-weight: 700;
-    font-size: 0.9rem;
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+#turn-indicator {
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .game-area {
@@ -270,6 +319,13 @@ input[type=range] {
     justify-content: center;
     perspective: 1000px;
     margin: 1rem 0;
+}
+
+.card-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
 .taboo-card {
@@ -391,12 +447,14 @@ input[type=range] {
 
 .result-card {
     background: var(--glass-bg);
-    width: 100%;
-    padding: 1.5rem;
-    border-radius: 20px;
+    width: 90%;
+    max-width: 380px;
+    padding: 2.5rem 2rem;
+    border-radius: 30px;
     border: 1px solid var(--glass-border);
-    margin-bottom: 1.5rem;
+    margin: 0 auto 2rem;
     text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .final-score-container {
@@ -435,7 +493,9 @@ input[type=range] {
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
-    width: 100%;
+    width: 90%;
+    max-width: 380px;
+    margin: 0 auto;
 }
 
 .pulse-anim {
@@ -570,30 +630,40 @@ input[type=range] {
 }
 
 .team-title {
-    font-size: 0.8rem;
-    margin-bottom: 0.4rem;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
     text-align: center;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .team-score {
     text-align: center;
     font-weight: 700;
-    margin-bottom: 0.4rem;
-    font-size: 0.8rem;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
 }
 
 .team-player-list {
     list-style: none;
-    max-height: 100px;
+    max-height: 400px;
     overflow-y: auto;
     flex: 1;
 }
 
-.team-player-list li {
-    padding: 0.4rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+.team-player-list li,
+#red-team-list li,
+#blue-team-list li {
+    padding: 0.8rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
     color: #fff;
-    font-size: 0.8rem;
+    font-size: 1.8rem !important;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
 }
 
 .room-info {

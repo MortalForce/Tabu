@@ -42,155 +42,214 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-shapes">
-                <div class="shape shape-1"></div>
-                <div class="shape shape-2"></div>
-            </div>
         </section>
 
-        <!-- Lobi Ekranı -->
-        <section id="lobby-screen" class="screen hidden">
-            <div class="lobby-layout">
-                <!-- Sol Panel: Takım Listeleri -->
-                <div class="teams-panel">
-                    <div class="teams-container">
-                        <div class="team-column red">
-                            <h3 class="team-title red-title">🔴 KIRMIZI TAKIM</h3>
-                            <div class="team-score">Skor: <span id="red-score">0</span></div>
-                            <ul id="red-team-list" class="team-player-list">
-                                <!-- Red team players -->
-                            </ul>
-                        </div>
-                        <div class="team-column blue">
-                            <h3 class="team-title blue-title">🔵 MAVİ TAKIM</h3>
-                            <div class="team-score">Skor: <span id="blue-score">0</span></div>
-                            <ul id="blue-team-list" class="team-player-list">
-                                <!-- Blue team players -->
-                            </ul>
-                        </div>
+    </div>
+
+    <!-- Lobi Ekranı -->
+    <section id="lobby-screen" class="screen hidden">
+        <div class="lobby-layout">
+            <!-- Sol Panel: Takım Listeleri -->
+            <div class="teams-panel">
+                <div class="teams-container">
+                    <div class="team-column red">
+                        <h3 class="team-title red-title">🔴 KIRMIZI TAKIM</h3>
+                        <div class="team-score">Skor: <span id="red-score">0</span></div>
+                        <ul id="red-team-list" class="team-player-list">
+                            <!-- Red team players -->
+                        </ul>
+                    </div>
+                    <div class="team-column blue">
+                        <h3 class="team-title blue-title">🔵 MAVİ TAKIM</h3>
+                        <div class="team-score">Skor: <span id="blue-score">0</span></div>
+                        <ul id="blue-team-list" class="team-player-list">
+                            <!-- Blue team players -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ Panel: Kontroller ve Bilgi -->
+            <div class="controls-panel">
+                <div class="lobby-header">
+                    <h2 class="neon-text small">LOBİ</h2>
+                    <div class="room-info">
+                        <span>ODA KODU: </span>
+                        <span id="display-room-code" class="code-highlight">UNKNOWN</span>
                     </div>
                 </div>
 
-                <!-- Sağ Panel: Kontroller ve Bilgi -->
-                <div class="controls-panel">
-                    <div class="lobby-header">
-                        <h2 class="neon-text small">LOBİ</h2>
-                        <div class="room-info">
-                            <span>ODA KODU: </span>
-                            <span id="display-room-code" class="code-highlight">UNKNOWN</span>
-                        </div>
+                <div class="team-selection">
+                    <h3>TAKIMINI SEÇ</h3>
+                    <div class="team-buttons">
+                        <button id="join-red-team" class="team-btn red-team">KIRMIZI TAKIM</button>
+                        <button id="join-blue-team" class="team-btn blue-team">MAVİ TAKIM</button>
                     </div>
-
-                    <div class="team-selection">
-                        <h3>TAKIMINI SEÇ</h3>
-                        <div class="team-buttons">
-                            <button id="join-red-team" class="team-btn red-team">KIRMIZI TAKIM</button>
-                            <button id="join-blue-team" class="team-btn blue-team">MAVİ TAKIM</button>
-                        </div>
-                    </div>
-
-                    <div id="host-controls" class="hidden">
-                        <div class="setting-group" style="margin: 1.5rem 0;">
-                            <label>Süre: <span id="time-display">60</span> sn</label>
-                            <input type="range" id="time-input" min="30" max="120" step="10" value="60">
-                        </div>
-                        <button id="lobby-start-btn" class="btn primary-btn pulse-anim">OYUNU BAŞLAT</button>
-                    </div>
-                    <p id="waiting-msg" class="subtitle hidden">Yönetici oyunu başlatıyor...</p>
                 </div>
+
+                <div id="host-controls" class="hidden">
+                    <div class="setting-group" style="margin: 1.5rem 0;">
+                        <label>Süre: <span id="time-display">60</span> sn</label>
+                        <input type="range" id="time-input" min="30" max="120" step="10" value="60">
+                    </div>
+                    <div class="setting-group" style="margin-bottom: 1.5rem;">
+                        <label>Tur Limiti: <span id="round-display">10</span></label>
+                        <input type="range" id="round-input" min="2" max="30" step="2" value="10">
+                    </div>
+                    <button id="lobby-start-btn" class="btn primary-btn pulse-anim">OYUNU BAŞLAT</button>
+                </div>
+                <p id="waiting-msg" class="subtitle hidden">Yönetici oyunu başlatıyor...</p>
             </div>
-        </section>
+        </div>
+    </section>
 
 
-        <!-- Oyun Ekranı -->
-        <section id="game-screen" class="screen hidden">
-            <header class="game-header" style="flex-direction: column; gap: 1rem;">
-                <!-- Top Row: Scores and Pause -->
-                <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                    <button id="pause-btn" class="icon-btn" style="width: 40px; height: 40px; border-radius: 50%;">
+    <!-- Oyun Ekranı -->
+    <section id="game-screen" class="screen hidden">
+        <header class="game-header" style="flex-direction: column; gap: 1rem;">
+            <!-- Top Row: Scores and Pause -->
+            <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                <!-- Timer ve Tur Göstergesi -->
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <span id="round-progress"
+                        style="font-size: 2rem; font-weight: bold; color: var(--primary-color); margin-bottom: 1.5rem; text-shadow: 0 0 10px rgba(0,0,0,0.5);">TUR:
+                        1/10</span>
+                    <div class="timer-ring" style="width: 80px; height: 80px;">
+                        <svg class="progress-ring" width="80" height="80">
+                            <circle class="progress-ring__circle" stroke="white" stroke-width="5" fill="transparent"
+                                r="36" cx="40" cy="40" style="stroke-dasharray: 226;" />
+                        </svg>
+                        <span id="timer" style="font-size: 1.8rem;">60</span>
+                    </div>
+                </div>
+
+                <!-- Pause Button -->
+                <div style="display: flex; gap: 0.5rem;">
+                    <button id="exit-game-btn" class="icon-btn" style="width: 50px; height: 50px; border-radius: 50%;">
+                        <i class="fa-solid fa-house"></i>
+                    </button>
+                    <button id="pause-btn" class="icon-btn" style="width: 50px; height: 50px; border-radius: 50%;">
                         <i class="fa-solid fa-pause"></i>
                     </button>
-                    <div class="score-board" style="display: flex; gap: 1rem;">
-                        <span style="color: #ff2a6d">🔴 <span id="game-red-score">0</span></span>
-                        <span style="color: #2980ff">🔵 <span id="game-blue-score">0</span></span>
-                    </div>
-                    <div class="timer-ring" style="width: 50px; height: 50px;">
-                        <svg class="progress-ring" width="50" height="50">
-                            <circle class="progress-ring__circle" stroke="white" stroke-width="3" fill="transparent"
-                                r="22" cx="25" cy="25" style="stroke-dasharray: 138;" />
-                        </svg>
-                        <span id="timer" style="font-size: 1rem;">60</span>
-                    </div>
+                    <button id="mute-btn" class="icon-btn" style="width: 50px; height: 50px; border-radius: 50%;">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
                 </div>
 
-                <!-- Turn Indicator -->
+                <!-- Scores -->
+                <div class="score-board" style="display: flex; gap: 1rem;">
+                    <span style="color: #ff2a6d">🔴 <span id="game-red-score">0</span></span>
+                    <span style="color: #2980ff">🔵 <span id="game-blue-score">0</span></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sağ Taraf Oyuncu Listesi (Sabit) -->
+        <!-- Sağ Taraf Oyuncu Listesi (Sabit) -->
+        <div id="in-game-player-list"
+            style="position: absolute; right: 20px; top: 180px; width: 220px; display: flex; flex-direction: column; gap: 1rem; z-index: 5;">
+            <!-- Kırmızı Takım -->
+            <div
+                style="background: rgba(0,0,0,0.5); border-radius: 10px; padding: 1rem; border: 1px solid rgba(255, 42, 109, 0.3);">
+                <div
+                    style="font-size: 1.2rem; font-weight: bold; color: #ff2a6d; margin-bottom: 8px; text-align: center;">
+                    KIRMIZI</div>
+                <ul id="game-red-list"
+                    style="list-style: none; font-size: 1.1rem; color: #eee; text-align: center; padding: 0;">
+                    <!-- JS ile doldurulacak -->
+                </ul>
+            </div>
+            <!-- Mavi Takım -->
+            <div
+                style="background: rgba(0,0,0,0.5); border-radius: 10px; padding: 1rem; border: 1px solid rgba(41, 128, 255, 0.3);">
+                <div
+                    style="font-size: 1.2rem; font-weight: bold; color: #2980ff; margin-bottom: 8px; text-align: center;">
+                    MAVİ</div>
+                <ul id="game-blue-list"
+                    style="list-style: none; font-size: 1.1rem; color: #eee; text-align: center; padding: 0;">
+                    <!-- JS ile doldurulacak -->
+                </ul>
+            </div>
+        </div>
+
+        <main class="game-area">
+            <div class="card-container" style="position: relative;">
+
+                <!-- Turn Indicator Moved Here -->
                 <div id="turn-indicator"
-                    style="background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; font-size: 0.9rem;">
+                    style="background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; font-size: 0.9rem; margin-bottom: 1rem; text-align: center;">
                     SIRA: Yükleniyor...
                 </div>
-            </header>
 
-            <main class="game-area">
-                <div class="card-container">
-                    <div id="card" class="taboo-card">
-                        <div class="card-header">
-                            <h2 id="target-word">KELİME</h2>
-                        </div>
-                        <div class="card-body">
-                            <ul id="banned-words" class="banned-list">
-                                <li>Yasak 1</li>
-                                <li>Yasak 2</li>
-                                <li>Yasak 3</li>
-                                <li>Yasak 4</li>
-                                <li>Yasak 5</li>
-                            </ul>
-                        </div>
+                <div id="card" class="taboo-card" style="position: relative; overflow: hidden;">
+                    <div class="card-header">
+                        <h2 id="target-word">KELİME</h2>
                     </div>
-                </div>
-            </main>
-
-            <footer class="game-controls">
-                <button id="taboo-btn" class="control-btn taboo"><i class="fa-solid fa-ban"></i> TABU</button>
-                <button id="pass-btn" class="control-btn pass">
-                    <i class="fa-solid fa-forward"></i> PAS <span id="pass-count-display"
-                        style="font-size: 0.8em; opacity: 0.8;">(0/3)</span>
-                </button>
-                <button id="correct-btn" class="control-btn correct"><i class="fa-solid fa-check"></i> DOĞRU</button>
-            </footer>
-        </section>
-
-        <!-- Sonuç Ekranı -->
-        <section id="result-screen" class="screen hidden">
-            <h2 class="neon-text small">SÜRE BİTTİ!</h2>
-
-            <div class="result-card">
-                <div class="final-score-container">
-                    <span class="label">TOPLAM SKOR</span>
-                    <span id="final-score" class="score-big">0</span>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-item correct">
-                        <i class="fa-solid fa-check"></i>
-                        <span id="total-correct">0</span>
-                    </div>
-                    <div class="stat-item taboo">
-                        <i class="fa-solid fa-ban"></i>
-                        <span id="total-taboo">0</span>
-                    </div>
-                    <div class="stat-item pass">
-                        <i class="fa-solid fa-forward"></i>
-                        <span id="total-pass">0</span>
+                    <div class="card-body">
+                        <ul id="banned-words" class="banned-list">
+                            <li>Yasak 1</li>
+                            <li>Yasak 2</li>
+                            <li>Yasak 3</li>
+                            <li>Yasak 4</li>
+                            <li>Yasak 5</li>
+                        </ul>
                     </div>
                 </div>
             </div>
+        </main>
 
-            <div class="action-buttons">
-                <button id="restart-btn" class="btn secondary-btn">TEKRAR OYNA <i
-                        class="fa-solid fa-rotate-right"></i></button>
-                <button id="home-btn" class="btn text-btn">Ana Menü</button>
+        <footer class="game-controls">
+            <!-- Oyuncunun Kendi Takımını Gösteren Badge (Sol Butonların Üstü) -->
+            <div id="my-team-badge" style="width: 100%; margin-bottom: 1rem;">
+                <div
+                    style="background: rgba(0,0,0,0.6); padding: 0.5rem; border-radius: 12px; text-align: center; border: 2px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <span style="font-size: 0.7rem; color: #aaa; display: block; margin-bottom: 2px;">SENİN
+                        TAKIMIN</span>
+                    <span id="my-team-name" style="font-size: 1.1rem; font-weight: 900; color: white;">SEÇİLMEDİ</span>
+                </div>
             </div>
-        </section>
+
+            <button id="taboo-btn" class="control-btn taboo"><i class="fa-solid fa-ban"></i> TABU</button>
+            <button id="pass-btn" class="control-btn pass">
+                <i class="fa-solid fa-forward"></i> PAS <span id="pass-count-display"
+                    style="font-size: 0.8em; opacity: 0.8;">(0/3)</span>
+            </button>
+            <button id="correct-btn" class="control-btn correct"><i class="fa-solid fa-check"></i> DOĞRU</button>
+        </footer>
+    </section>
+
+    <!-- Sonuç Ekranı -->
+    <section id="result-screen" class="screen hidden">
+        <h2 class="neon-text small">SÜRE BİTTİ!</h2>
+
+        <div class="result-card">
+            <div class="final-score-container">
+                <span class="label">TOPLAM SKOR</span>
+                <span id="final-score" class="score-big">0</span>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item correct">
+                    <i class="fa-solid fa-check"></i>
+                    <span id="total-correct">0</span>
+                </div>
+                <div class="stat-item taboo">
+                    <i class="fa-solid fa-ban"></i>
+                    <span id="total-taboo">0</span>
+                </div>
+                <div class="stat-item pass">
+                    <i class="fa-solid fa-forward"></i>
+                    <span id="total-pass">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button id="restart-btn" class="btn secondary-btn">TEKRAR OYNA <i
+                    class="fa-solid fa-rotate-right"></i></button>
+            <button id="home-btn" class="btn text-btn">Ana Menü</button>
+        </div>
+    </section>
     </div>
 
     <!-- <script src="data.js"></script> Removed: Data handled by server now -->

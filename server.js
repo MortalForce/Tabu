@@ -229,13 +229,42 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('startGame', ({ roomId, time }) => {
+    socket.on('startGame', ({ roomId, time, rounds }) => {
         const room = rooms.get(roomId);
         if (room) {
+            // Takımları karıştırarak sıraya diz (Görsel liste için)
+            const redTeam = room.players.filter(p => p.team === 'red');
+            const blueTeam = room.players.filter(p => p.team === 'blue');
+            const others = room.players.filter(p => p.team !== 'red' && p.team !== 'blue');
+
+            const newOrder = [];
+            const maxLen = Math.max(redTeam.length, blueTeam.length);
+
+            for (let i = 0; i < maxLen; i++) {
+                if (i < redTeam.length) newOrder.push(redTeam[i]);
+                if (i < blueTeam.length) newOrder.push(blueTeam[i]);
+            }
+            newOrder.push(...others);
+            room.players = newOrder;
+            io.to(roomId).emit('updatePlayerList', room.players);
+
+            // Oyun Ayarları
             room.settings.time = time;
+            room.settings.rounds = rounds || 10; // Varsayılan 10 tur
+            room.currentRound = 1;
+
+            // Reset Scores & State for new game
+            room.teamScores = { red: 0, blue: 0 };
+            room.passCount = 0;
+            io.to(roomId).emit('updateTeamScores', room.teamScores);
+
             room.gameState = 'PLAYING';
-            room.turnIndex = 0;
-            room.currentTeam = 'red';
+
+            // SIRA MANTIĞI: Takım Takım ilerle
+            room.redNextIdx = 0;
+            room.blueNextIdx = 0;
+            room.nextTeamToPlay = 'red'; // İlk her zaman kırmızı başlar (veya rastgele)
+
             startTurn(roomId);
             io.to(roomId).emit('gameStarted');
         }
@@ -256,20 +285,22 @@ io.on('connection', (socket) => {
         const activePlayer = room.players[room.turnIndex];
         const playerTeam = activePlayer.team;
 
-        // Safety check: if player has no team, don't update score (or default to red?)
         if (!playerTeam) return;
 
         if (type === 'correct') {
             room.teamScores[playerTeam] += 1;
+            io.to(roomId).emit('playEffect', 'correct');
             nextCard(roomId);
         } else if (type === 'taboo') {
             room.teamScores[playerTeam] -= 1;
             io.to(roomId).emit('tabooFault');
+            io.to(roomId).emit('playEffect', 'taboo');
             nextCard(roomId);
         } else if (type === 'pass') {
             if (room.passCount < 3) {
                 room.passCount++;
                 io.to(roomId).emit('updatePassCount', room.passCount);
+                io.to(roomId).emit('playEffect', 'pass');
                 nextCard(roomId);
             }
         }
@@ -278,7 +309,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-        // Handle disconnect logic (remove player from room, delete empty room)
         rooms.forEach((room, roomId) => {
             const index = room.players.findIndex(p => p.id === socket.id);
             if (index !== -1) {
@@ -297,19 +327,56 @@ function startTurn(roomId) {
     const room = rooms.get(roomId);
     if (!room) return;
 
+    // Hangi takımın sırasıysa, o takımın listesindeki sıradaki oyuncuyu seç.
+    const teamToPlay = room.nextTeamToPlay;
+    const teamPlayers = room.players.filter(p => p.team === teamToPlay);
+
+    // Eğer o takımda oyuncu yoksa veya takım boşsa, diğer takıma geç
+    if (teamPlayers.length === 0) {
+        console.warn(`No players in ${teamToPlay} team for room ${roomId}. Skipping turn.`);
+        room.nextTeamToPlay = teamToPlay === 'red' ? 'blue' : 'red';
+
+        // Sonsuz döngü kontrolü eklenebilir ama basitlik için:
+        // Tur sayısını artırmadan diğer takıma geçiyoruz, ama tur limitini kontrol etmeli miyiz?
+        // Şimdilik pas geçip tekrar deniyoruz.
+        // startTurn içinde zaten sonsuz döngüyü engelleyen bir yapı tam yok ama oyuncu varsa çalışır.
+
+        const otherTeamPlayers = room.players.filter(p => p.team === room.nextTeamToPlay);
+        if (otherTeamPlayers.length === 0) return; // İki takım da boşsa dur.
+
+        startTurn(roomId);
+        return;
+    }
+
+    // O takımın sıradaki oyuncusunu bul
+    let playerIdxInTeam;
+    if (teamToPlay === 'red') {
+        playerIdxInTeam = room.redNextIdx % teamPlayers.length;
+        room.redNextIdx++;
+    } else { // teamToPlay === 'blue'
+        playerIdxInTeam = room.blueNextIdx % teamPlayers.length;
+        room.blueNextIdx++;
+    }
+
+    const activePlayer = teamPlayers[playerIdxInTeam];
+
+    // Global listedeki indexini bul
+    room.turnIndex = room.players.findIndex(p => p.id === activePlayer.id);
+    room.currentTeam = teamToPlay;
+
+    // -----------------------------------
+
     room.passCount = 0; // Reset pass count
     io.to(roomId).emit('updatePassCount', 0);
 
     room.timer = room.settings.time;
     room.currentCard = room.deck.pop();
 
-    // Reshuffle if empty
     if (!room.currentCard) {
         room.deck = [...ALL_CARDS].sort(() => Math.random() - 0.5);
         room.currentCard = room.deck.pop();
     }
 
-    const activePlayer = room.players[room.turnIndex];
     const describerTeam = activePlayer.team;
 
     // Send different info to different players based on their role
@@ -317,37 +384,24 @@ function startTurn(roomId) {
         const playerSocket = io.sockets.sockets.get(player.id);
         if (!playerSocket) return;
 
+        const commonData = {
+            activePlayerId: activePlayer.id,
+            username: activePlayer.username,
+            team: activePlayer.team,
+            timer: room.timer,
+            currentRound: room.currentRound || 1,
+            totalRounds: room.settings ? (room.settings.rounds || 10) : 10
+        };
+
         if (player.id === activePlayer.id) {
-            // The describer sees the card
-            playerSocket.emit('newTurn', {
-                activePlayerId: activePlayer.id,
-                username: activePlayer.username,
-                timer: room.timer,
-                role: 'describer',
-                card: room.currentCard
-            });
+            playerSocket.emit('newTurn', { ...commonData, role: 'describer', card: room.currentCard });
         } else if (player.team !== describerTeam) {
-            // Opposite team sees the card (to catch taboo)
-            playerSocket.emit('newTurn', {
-                activePlayerId: activePlayer.id,
-                username: activePlayer.username,
-                timer: room.timer,
-                role: 'monitor',
-                card: room.currentCard
-            });
+            playerSocket.emit('newTurn', { ...commonData, role: 'monitor', card: room.currentCard });
         } else {
-            // Same team doesn't see the card (guessing)
-            playerSocket.emit('newTurn', {
-                activePlayerId: activePlayer.id,
-                username: activePlayer.username,
-                timer: room.timer,
-                role: 'guesser',
-                card: null
-            });
+            playerSocket.emit('newTurn', { ...commonData, role: 'guesser', card: null });
         }
     });
 
-    // Clear existing timer if any
     if (room.timerInterval) clearInterval(room.timerInterval);
 
     room.timerInterval = setInterval(() => {
@@ -380,27 +434,19 @@ function endTurn(roomId) {
     const room = rooms.get(roomId);
     if (!room) return;
 
-    // Find next player from opposite team
-    const currentPlayer = room.players[room.turnIndex];
-    const currentTeam = currentPlayer.team;
-    const oppositeTeam = currentTeam === 'red' ? 'blue' : 'red';
+    // Turu tamamladık, sayacı artır
+    room.currentRound++;
 
-    // Find first player from opposite team
-    let nextIndex = -1;
-    for (let i = 0; i < room.players.length; i++) {
-        const checkIndex = (room.turnIndex + 1 + i) % room.players.length;
-        if (room.players[checkIndex].team === oppositeTeam) {
-            nextIndex = checkIndex;
-            break;
-        }
+    // Tur limiti kontrolü
+    if (room.currentRound > room.settings.rounds) {
+        io.to(roomId).emit('gameOver', room.teamScores);
+        // Oyunu bitir (GameState temizliği veya reset yapılabilir)
+        return;
     }
 
-    // If no player found from opposite team, stay with current player (shouldn't happen normally)
-    if (nextIndex === -1) {
-        nextIndex = (room.turnIndex + 1) % room.players.length;
-    }
+    // Sadece sıradaki takımı değiştir
+    room.nextTeamToPlay = room.nextTeamToPlay === 'red' ? 'blue' : 'red';
 
-    room.turnIndex = nextIndex;
     startTurn(roomId);
 }
 
